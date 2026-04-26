@@ -202,9 +202,12 @@ function openGame(path) {
     window.location.href = path;
 }
 
+const backendHost = window.location.hostname || "127.0.0.1";
+const backendBaseUrl = `http://${backendHost}:5000`;
+
 /* 🧠 ML BACKEND CALL */
 function getAILevel() {
-    fetch("http://127.0.0.1:5000/predict-level", {
+    fetch(`${backendBaseUrl}/predict-level`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -224,7 +227,7 @@ function getAILevel() {
 
 /* 🗣️ NLP BACKEND CALL */
 function getEmotion() {
-    fetch("http://127.0.0.1:5000/emotion", {
+    fetch(`${backendBaseUrl}/emotion`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

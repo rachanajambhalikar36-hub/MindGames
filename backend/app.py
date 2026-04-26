@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 
 app = Flask(__name__)
-CORS(app, origins=["*"], supports_credentials=True)
+CORS(app)
 
 # -------------------------------
 # 📊 TRAINING DATA (fake but valid for project)
@@ -57,7 +57,7 @@ def predict():
 # -------------------------------
 # 🗣️ NLP (simple sentiment fallback)
 # -------------------------------
-# Avoids the external TextBlob dependency by using a lightweight keyword-based sentiment heuristic.
+# Removed TextBlob dependency to avoid import issues.
 POSITIVE_WORDS = {
     "happy", "joy", "love", "awesome", "great", "good", "excited", "nice", "smile",
     "wonderful", "positive", "optimistic", "best"
@@ -91,4 +91,4 @@ def emotion():
 # RUN SERVER
 # -------------------------------
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(debug=True)

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Child Math AI Game</title>
 
 <style>
@@ -16,11 +17,11 @@ body {
 /* Back button */
 #backBtn {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    padding: 10px 14px;
+    top: 0.625rem;
+    left: 0.625rem;
+    padding: 0.625rem 0.875rem;
     border: none;
-    border-radius: 10px;
+    border-radius: 0.625rem;
     background: white;
     color: black;
     font-weight: bold;
@@ -29,45 +30,45 @@ body {
 
 /* Title */
 h1 {
-    margin-top: 20px;
+    margin-top: 1.25rem;
 }
 
 /* Info */
 #info {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    font-size: 18px;
+    gap: 1.25rem;
+    font-size: 1.125rem;
 }
 
 /* box */
 #box {
     width: 70%;
-    margin: 25px auto;
-    padding: 25px;
-    font-size: 32px;
+    margin: 1.5625rem auto;
+    padding: 1.5625rem;
+    font-size: 2rem;
     font-weight: bold;
     background: rgba(255,255,255,0.15);
-    border-radius: 20px;
+    border-radius: 1.25rem;
 }
 
 /* input */
 input {
-    padding: 12px;
-    font-size: 18px;
+    padding: 0.75rem;
+    font-size: 1.125rem;
     border: none;
-    border-radius: 10px;
-    width: 120px;
+    border-radius: 0.625rem;
+    width: 7.5rem;
     text-align: center;
 }
 
 /* buttons */
 button {
-    margin-top: 12px;
-    padding: 12px 18px;
-    font-size: 15px;
+    margin-top: 0.75rem;
+    padding: 0.75rem 1.125rem;
+    font-size: 0.9375rem;
     border: none;
-    border-radius: 12px;
+    border-radius: 0.75rem;
     cursor: pointer;
     font-weight: bold;
 }
@@ -84,14 +85,14 @@ button {
 
 /* messages */
 #msg {
-    margin-top: 15px;
-    font-size: 18px;
-    min-height: 25px;
+    margin-top: 0.9375rem;
+    font-size: 1.125rem;
+    min-height: 1.5625rem;
 }
 
 #correctAns {
-    margin-top: 10px;
-    font-size: 16px;
+    margin-top: 0.625rem;
+    font-size: 1rem;
     opacity: 0.9;
 }
 
@@ -106,7 +107,7 @@ button {
     background: rgba(0,0,0,0.85);
     color: white;
     text-align: center;
-    padding-top: 120px;
+    padding-top: 7.5rem;
 }
 
 /* START SCREEN */
@@ -122,6 +123,53 @@ button {
     justify-content: center;
     align-items: center;
     z-index: 999;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 37.5rem) {
+    #backBtn {
+        top: 0.3125rem;
+        left: 0.3125rem;
+        padding: 0.5rem 0.625rem;
+        font-size: 0.75rem;
+    }
+    h1 {
+        margin-top: 0.9375rem;
+        font-size: 1.5rem;
+    }
+    #info {
+        gap: 0.9375rem;
+        font-size: 1rem;
+    }
+    #box {
+        width: 85%;
+        margin: 1.25rem auto;
+        padding: 1.25rem;
+        font-size: 1.75rem;
+    }
+    input {
+        padding: 0.625rem;
+        font-size: 1rem;
+        width: 6.25rem;
+    }
+    button {
+        margin-top: 0.625rem;
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+    }
+    #msg {
+        margin-top: 0.75rem;
+        font-size: 1rem;
+    }
+    #correctAns {
+        font-size: 0.875rem;
+    }
+    #gameOverScreen {
+        padding: 1.25rem;
+    }
+    #gameOverScreen h2 {
+        font-size: 20px;
+    }
 }
 
 </style>

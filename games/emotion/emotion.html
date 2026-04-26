@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Emotion Matcher</title>
 
 <style>
@@ -16,13 +17,13 @@ body {
 /* Back button */
 #backBtn {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    padding: 10px 14px;
-    font-size: 13px;
+    top: 0.625rem;
+    left: 0.625rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8125rem;
     font-weight: bold;
     border: none;
-    border-radius: 10px;
+    border-radius: 0.625rem;
     cursor: pointer;
     background: white;
     color: black;
@@ -30,15 +31,15 @@ body {
 
 /* Start button */
 #startScreen {
-    margin-top: 80px;
+    margin-top: 5rem;
 }
 
 #startBtn {
-    padding: 15px 25px;
-    font-size: 18px;
+    padding: 0.9375rem 1.5625rem;
+    font-size: 1.125rem;
     font-weight: bold;
     border: none;
-    border-radius: 12px;
+    border-radius: 0.75rem;
     cursor: pointer;
     background: #00c853;
     color: white;
@@ -56,16 +57,16 @@ body {
 
 /* Title */
 h1 {
-    margin-top: 20px;
+    margin-top: 1.25rem;
 }
 
 /* Score + timer */
 #scoreBoard {
     display: flex;
     justify-content: center;
-    gap: 30px;
-    font-size: 18px;
-    margin: 10px;
+    gap: 1.875rem;
+    font-size: 1.125rem;
+    margin: 0.625rem;
 }
 
 /* Timer */
@@ -77,19 +78,19 @@ h1 {
 /* Question box */
 #box {
     width: 70%;
-    margin: 15px auto;
-    padding: 20px;
+    margin: 0.9375rem auto;
+    padding: 1.25rem;
     background: rgba(255,255,255,0.08);
-    border-radius: 15px;
-    font-size: 20px;
-    min-height: 80px;
+    border-radius: 0.9375rem;
+    font-size: 1.25rem;
+    min-height: 5rem;
 }
 
 /* Feedback */
 #feedback {
-    margin: 10px;
-    font-size: 18px;
-    height: 25px;
+    margin: 0.625rem;
+    font-size: 1.125rem;
+    height: 1.5625rem;
     font-weight: bold;
 }
 
@@ -98,15 +99,15 @@ h1 {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 15px;
+    gap: 0.75rem;
+    margin-top: 0.9375rem;
 }
 
 button {
-    padding: 12px 18px;
-    font-size: 15px;
+    padding: 0.75rem 1.125rem;
+    font-size: 0.9375rem;
     border: none;
-    border-radius: 12px;
+    border-radius: 0.75rem;
     cursor: pointer;
     font-weight: bold;
     transition: 0.2s;
@@ -123,12 +124,56 @@ button:hover {
 .surprised { background: #ffab00; color: black; }
 
 .control {
-    margin-top: 15px;
+    margin-top: 0.9375rem;
 }
 
 .control button {
     background: white;
     color: black;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 37.5rem) {
+    #backBtn {
+        top: 0.3125rem;
+        left: 0.3125rem;
+        padding: 0.5rem 0.625rem;
+        font-size: 0.75rem;
+    }
+    #startScreen {
+        margin-top: 3.75rem;
+    }
+    #startBtn {
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+    }
+    h1 {
+        margin-top: 0.9375rem;
+        font-size: 1.25rem;
+    }
+    #scoreBoard {
+        gap: 1.25rem;
+        font-size: 1rem;
+        margin: 0.5rem;
+    }
+    #box {
+        width: 85%;
+        padding: 0.9375rem;
+        font-size: 1.125rem;
+        min-height: 3.75rem;
+    }
+    #feedback {
+        margin: 0.5rem;
+        font-size: 1rem;
+    }
+    .btn-container {
+        gap: 0.5rem;
+        margin-top: 0.625rem;
+    }
+    button {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.875rem;
+    }
 }
 
 </style>

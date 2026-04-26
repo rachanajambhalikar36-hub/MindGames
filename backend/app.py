@@ -55,40 +55,28 @@ def predict():
     })
 
 # -------------------------------
-# 🗣️ NLP (simple sentiment fallback)
+# 🗣️ NLP (same as before)
 # -------------------------------
-# Removed TextBlob dependency to avoid import issues.
-POSITIVE_WORDS = {
-    "happy", "joy", "love", "awesome", "great", "good", "excited", "nice", "smile",
-    "wonderful", "positive", "optimistic", "best"
-}
-NEGATIVE_WORDS = {
-    "sad", "angry", "hate", "bad", "upset", "terrible", "worried", "anxious",
-    "stress", "negative", "worst"
-}
+from textblob import TextBlob
 
 def detect_emotion(text):
-    if not isinstance(text, str) or not text.strip():
-        return "Neutral 😐"
+    polarity = TextBlob(text).sentiment.polarity
 
-    text_lower = text.lower()
-    positive_count = sum(word in text_lower for word in POSITIVE_WORDS)
-    negative_count = sum(word in text_lower for word in NEGATIVE_WORDS)
-
-    if positive_count > negative_count:
+    if polarity > 0.3:
         return "Happy 😊"
-    if negative_count > positive_count:
+    elif polarity < -0.3:
         return "Sad 😢"
-    return "Neutral 😐"
+    else:
+        return "Neutral 😐"
 
 @app.route("/emotion", methods=["POST"])
 def emotion():
     data = request.json
-    result = detect_emotion(data.get("text", ""))
+    result = detect_emotion(data["text"])
     return jsonify({"emotion": result})
 
 # -------------------------------
 # RUN SERVER
 # -------------------------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

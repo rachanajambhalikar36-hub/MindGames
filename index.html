@@ -204,9 +204,11 @@ function openGame(path) {
 
 const backendHost = window.location.hostname || "127.0.0.1";
 const backendBaseUrl = `http://${backendHost}:5000`;
+console.log("Backend URL:", backendBaseUrl);
 
 /* 🧠 ML BACKEND CALL */
 function getAILevel() {
+    console.log("Calling getAILevel...");
     fetch(`${backendBaseUrl}/predict-level`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -216,17 +218,23 @@ function getAILevel() {
             accuracy: 70
         })
     })
-    .then(res => res.json())
+    .then(res => {
+        console.log("getAILevel response:", res.status);
+        return res.json();
+    })
     .then(data => {
+        console.log("getAILevel data:", data);
         document.getElementById("aiLevel").innerText = data.level;
     })
-    .catch(() => {
+    .catch(err => {
+        console.error("getAILevel error:", err);
         document.getElementById("aiLevel").innerText = "Offline";
     });
 }
 
 /* 🗣️ NLP BACKEND CALL */
 function getEmotion() {
+    console.log("Calling getEmotion...");
     fetch(`${backendBaseUrl}/emotion`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -234,18 +242,25 @@ function getEmotion() {
             text: "I am happy to play games"
         })
     })
-    .then(res => res.json())
+    .then(res => {
+        console.log("getEmotion response:", res.status);
+        return res.json();
+    })
     .then(data => {
+        console.log("getEmotion data:", data);
         document.getElementById("aiEmotion").innerText = data.emotion;
     })
-    .catch(() => {
+    .catch(err => {
+        console.error("getEmotion error:", err);
         document.getElementById("aiEmotion").innerText = "Offline";
     });
 }
 
 /* AUTO LOAD AI */
-getAILevel();
-getEmotion();
+document.addEventListener('DOMContentLoaded', function() {
+    getAILevel();
+    getEmotion();
+});
 
 </script>
 

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Focus Game AI</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+    text-align: center;
+}
+
+/* TOP BAR */
+#topBar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+button:hover {
+    transform: scale(1.08);
+}
+
+button:nth-child(1) { background: #00c853; color: white; }
+button:nth-child(2) { background: #ffab00; color: black; }
+button:nth-child(3) { background: #d50000; color: white; }
+
+/* TITLE */
+h1 {
+    margin: 10px;
+    font-size: 22px;
+}
+
+/* INFO */
+.info {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    font-size: 13px;
+    margin: 6px;
+    opacity: 0.9;
+}
+
+/* GAME AREA */
+#gameArea {
+    width: 65%;
+    height: 55vh;
+    margin: auto;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid white;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.05);
+}
+
+/* BALL */
+.ball {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    cursor: pointer;
+}
+
+.green { background: limegreen; }
+.red { background: red; }
+.yellow { background: gold; }
+
+/* GAME OVER SCREEN */
+#gameOver {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.85);
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    width: 220px;
+}
+
+#gameOver button {
+    margin-top: 10px;
+    background: #00c853;
+    color: white;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Buttons -->
+<div id="topBar">
+    <button onclick="startGame()">Start</button>
+    <button onclick="restartGame()">Restart</button>
+    <button onclick="goBack()">Back</button>
+</div>
+
+<h1>🎯 Focus Game (AI Powered)</h1>
+
+<!-- Info -->
+<div class="info">
+    <div>Score: <span id="score">0</span></div>
+    <div>Lives: <span id="lives">3</span></div>
+    <div>Time: <span id="time">60</span></div>
+    <div>High: <span id="highScore">0</span></div>
+    <div>AI: <span id="aiLevel">Beginner</span></div>
+</div>
+
+<!-- Game Area -->
+<div id="gameArea">
+
+    <!-- GAME OVER UI -->
+    <div id="gameOver">
+        <h2>⏱ Game Over</h2>
+        <p>Score: <span id="finalScore"></span></p>
+        <button onclick="restartGame()">Restart</button>
+    </div>
+
+</div>
+
+<script>
+
+let score = 0;
+let lives = 3;
+let time = 60;
+
+let gameInterval;
+let spawnInterval;
+
+/* HIGH SCORE */
+let highScore = localStorage.getItem("highScore") || 0;
+document.getElementById("highScore").innerText = highScore;
+
+/* 🧠 AI SYSTEM */
+let AI = {
+    correct: 0,
+    wrong: 0,
+    level: "Beginner"
+};
+
+function updateAI(isCorrect) {
+    if (isCorrect) AI.correct++;
+    else AI.wrong++;
+
+    let total = AI.correct + AI.wrong;
+    let accuracy = (AI.correct / total) * 100;
+
+    if (accuracy > 80) AI.level = "Advanced";
+    else if (accuracy > 50) AI.level = "Intermediate";
+    else AI.level = "Beginner";
+
+    updateDifficulty();
+}
+
+/* AI DIFFICULTY */
+function updateDifficulty() {
+    clearInterval(spawnInterval);
+
+    let speed;
+
+    if (AI.level === "Beginner") speed = 700;
+    else if (AI.level === "Intermediate") speed = 450;
+    else speed = 250;
+
+    spawnInterval = setInterval(spawnBall, speed);
+}
+
+/* BACK */
+function goBack() {
+    window.history.back();
+}
+
+/* START GAME */
+function startGame() {
+    resetGame();
+
+    gameInterval = setInterval(() => {
+        time--;
+        document.getElementById("time").innerText = time;
+
+        if (time <= 0 || lives <= 0) {
+            endGame();
+        }
+    }, 1000);
+
+    updateDifficulty();
+}
+
+/* RESTART */
+function restartGame() {
+    document.getElementById("gameOver").style.display = "none";
+    clearInterval(gameInterval);
+    clearInterval(spawnInterval);
+    startGame();
+}
+
+/* RESET */
+function resetGame() {
+    score = 0;
+    lives = 3;
+    time = 60;
+
+    AI.correct = 0;
+    AI.wrong = 0;
+    AI.level = "Beginner";
+
+    document.getElementById("score").innerText = score;
+    document.getElementById("lives").innerText = lives;
+    document.getElementById("time").innerText = time;
+    document.getElementById("aiLevel").innerText = AI.level;
+
+    document.getElementById("gameArea").innerHTML = `
+        <div id="gameOver">
+            <h2>⏱ Game Over</h2>
+            <p>Score: <span id="finalScore"></span></p>
+            <button onclick="restartGame()">Restart</button>
+        </div>
+    `;
+}
+
+/* SPAWN BALL */
+function spawnBall() {
+    const ball = document.createElement("div");
+    ball.classList.add("ball");
+
+    let colors = ["green", "red", "yellow"];
+    let color = colors[Math.floor(Math.random() * colors.length)];
+    ball.classList.add(color);
+
+    ball.style.top = Math.random() * 85 + "%";
+    ball.style.left = Math.random() * 85 + "%";
+
+    ball.onclick = function () {
+
+        let isCorrect = false;
+
+        if (color === "green") {
+            score++;
+            isCorrect = true;
+            document.getElementById("score").innerText = score;
+        } else {
+            lives--;
+            isCorrect = false;
+            document.getElementById("lives").innerText = lives;
+        }
+
+        updateAI(isCorrect);
+
+        ball.remove();
+
+        if (lives <= 0) endGame();
+    };
+
+    document.getElementById("gameArea").appendChild(ball);
+
+    setTimeout(() => ball.remove(), 1500);
+}
+
+/* END GAME (NO POPUP) */
+function endGame() {
+    clearInterval(gameInterval);
+    clearInterval(spawnInterval);
+
+    if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("highScore", highScore);
+        document.getElementById("highScore").innerText = highScore;
+    }
+
+    document.getElementById("finalScore").innerText = score;
+    document.getElementById("gameOver").style.display = "block";
+}
+
+/* AI DISPLAY */
+setInterval(() => {
+    document.getElementById("aiLevel").innerText = AI.level;
+}, 500);
+
+</script>
+
+</body>
+</html>

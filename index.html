@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kids Game Hub AI</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Arial Rounded MT Bold", Arial, sans-serif;
+
+    background: linear-gradient(135deg, #ff4d6d, #ff8fab, #7b2cbf, #4cc9f0);
+    color: white;
+}
+
+/* HEADER */
+header {
+    text-align: center;
+    padding: 25px;
+}
+
+header h1 {
+    font-size: 40px;
+    margin: 0;
+    text-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+header p {
+    opacity: 0.9;
+    font-size: 16px;
+}
+
+/* AI STATUS */
+#aiBox {
+    margin-top: 12px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* CONTAINER */
+.container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 90%;
+    max-width: 750px;
+    margin: auto;
+    padding-bottom: 60px;
+}
+
+/* GAME CARD */
+.card {
+    background: rgba(255,255,255,0.18);
+    border-radius: 25px;
+    padding: 25px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    cursor: pointer;
+    transition: 0.2s;
+
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+.card:hover {
+    transform: scale(1.05);
+    background: rgba(255,255,255,0.28);
+}
+
+/* TEXT */
+.title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.sub {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-top: 4px;
+}
+
+/* PLAY BUTTON */
+.play {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 15px;
+    background: #fff;
+    color: #ff2e63;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.play:hover {
+    transform: scale(1.1);
+    background: #ffe5ec;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🎮 Kids Game World AI</h1>
+    <p>Play & Learn with Smart AI Games</p>
+
+    <!-- 🧠 AI STATUS -->
+    <div id="aiBox">
+        🧠 AI Level: <span id="aiLevel">Loading...</span> |
+        😊 Emotion: <span id="aiEmotion">Loading...</span>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="card" onclick="openGame('games/focus/focus.html')">
+        <div>
+            <div class="title">🎯 Focus Game</div>
+            <div class="sub">Click only green balls</div>
+        </div>
+        <button class="play">Play</button>
+    </div>
+
+    <div class="card" onclick="openGame('games/emotion/emotion.html')">
+        <div>
+            <div class="title">🧠 Emotion Matcher</div>
+            <div class="sub">Guess correct emotion</div>
+        </div>
+        <button class="play">Play</button>
+    </div>
+
+    <div class="card" onclick="openGame('games/math/math.html')">
+        <div>
+            <div class="title">⚡ Math Challenge</div>
+            <div class="sub">Solve fast math questions</div>
+        </div>
+        <button class="play">Play</button>
+    </div>
+
+    <div class="card" onclick="openGame('games/memory/memory.html')">
+        <div>
+            <div class="title">🧩 Memory Game</div>
+            <div class="sub">Match the pairs!</div>
+        </div>
+        <button class="play">Play</button>
+    </div>
+
+    <div class="card" onclick="openGame('games/breath/breath.html')">
+        <div>
+            <div class="title">🌬️ Breathing Game</div>
+            <div class="sub">Relax with breathing</div>
+        </div>
+        <button class="play">Play</button>
+
+</div>
+
+<script>
+
+/* OPEN GAME */
+function openGame(path) {
+    window.location.href = path;
+}
+
+/* 🧠 ML BACKEND CALL */
+function getAILevel() {
+    fetch("http://127.0.0.1:5000/predict-level", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            score: 10,
+            time: 30,
+            accuracy: 70
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("aiLevel").innerText = data.level;
+    })
+    .catch(() => {
+        document.getElementById("aiLevel").innerText = "Offline";
+    });
+}
+
+/* 🗣️ NLP BACKEND CALL */
+function getEmotion() {
+    fetch("http://127.0.0.1:5000/emotion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            text: "I am happy to play games"
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("aiEmotion").innerText = data.emotion;
+    })
+    .catch(() => {
+        document.getElementById("aiEmotion").innerText = "Offline";
+    });
+}
+
+/* AUTO LOAD AI */
+getAILevel();
+getEmotion();
+
+</script>
+
+</body>
+</html>

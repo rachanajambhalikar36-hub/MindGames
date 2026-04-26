@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Emotion Matcher</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: linear-gradient(135deg, #141e30, #243b55);
+    color: white;
+    text-align: center;
+}
+
+/* Back button */
+#backBtn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: white;
+    color: black;
+}
+
+/* Start button */
+#startScreen {
+    margin-top: 80px;
+}
+
+#startBtn {
+    padding: 15px 25px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: #00c853;
+    color: white;
+    transition: 0.2s;
+}
+
+#startBtn:hover {
+    transform: scale(1.1);
+}
+
+/* Hide game initially */
+#gameArea {
+    display: none;
+}
+
+/* Title */
+h1 {
+    margin-top: 20px;
+}
+
+/* Score + timer */
+#scoreBoard {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    font-size: 18px;
+    margin: 10px;
+}
+
+/* Timer */
+#timer {
+    color: #ffeb3b;
+    font-weight: bold;
+}
+
+/* Question box */
+#box {
+    width: 70%;
+    margin: 15px auto;
+    padding: 20px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 15px;
+    font-size: 20px;
+    min-height: 80px;
+}
+
+/* Feedback */
+#feedback {
+    margin: 10px;
+    font-size: 18px;
+    height: 25px;
+    font-weight: bold;
+}
+
+/* Buttons */
+.btn-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+button {
+    padding: 12px 18px;
+    font-size: 15px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: scale(1.08);
+}
+
+.happy { background: #00c853; color: white; }
+.sad { background: #2979ff; color: white; }
+.angry { background: #d50000; color: white; }
+.fear { background: #8e24aa; color: white; }
+.surprised { background: #ffab00; color: black; }
+
+.control {
+    margin-top: 15px;
+}
+
+.control button {
+    background: white;
+    color: black;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- 🔙 Back -->
+<button id="backBtn" onclick="goBack()">⬅ Back</button>
+
+<h1>🧠 AI Emotion Matcher</h1>
+
+<!-- ▶️ Start Screen -->
+<div id="startScreen">
+    <button id="startBtn" onclick="startGame()">▶ Start Game</button>
+</div>
+
+<!-- 🎮 Game Area -->
+<div id="gameArea">
+
+    <div id="scoreBoard">
+        <div>Score: <span id="score">0</span></div>
+        <div>⏱ Time: <span id="timer">60</span></div>
+    </div>
+
+    <div id="box"></div>
+
+    <div id="feedback"></div>
+
+    <div class="btn-container">
+        <button class="happy" onclick="check('happy')">😊 Happy</button>
+        <button class="sad" onclick="check('sad')">😢 Sad</button>
+        <button class="angry" onclick="check('angry')">😡 Angry</button>
+        <button class="fear" onclick="check('fear')">😨 Fear</button>
+        <button class="surprised" onclick="check('surprised')">😲 Surprised</button>
+    </div>
+
+    <div class="control">
+        <button onclick="restartGame()">Restart</button>
+    </div>
+
+</div>
+
+<script>
+
+let score = 0;
+let currentAnswer = "";
+let time = 60;
+let timerInterval;
+let gameStarted = false;
+
+/* Back */
+function goBack() {
+    window.history.back();
+}
+
+/* Start Game */
+function startGame() {
+    gameStarted = true;
+
+    document.getElementById("startScreen").style.display = "none";
+    document.getElementById("gameArea").style.display = "block";
+
+    score = 0;
+    time = 60;
+
+    document.getElementById("score").innerText = score;
+    document.getElementById("timer").innerText = time;
+
+    startTimer();
+    nextQuestion();
+}
+
+/* Timer */
+function startTimer() {
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+        time--;
+        document.getElementById("timer").innerText = time;
+
+        if (time <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById("feedback").innerText = "⏱ Time's up!";
+            document.getElementById("feedback").style.color = "#ff5252";
+        }
+    }, 1000);
+}
+
+/* AI data */
+const subjects = [
+    "You", "Your friend", "A stranger", "Your teacher", "A child", "Your pet"
+];
+
+const events = [
+    "got a surprise gift 🎁",
+    "lost something important 😢",
+    "saw something scary 👻",
+    "won a competition 🏆",
+    "was insulted in public 😡",
+    "found money on the road 💰",
+    "got good news 📢",
+    "failed an exam 📚",
+    "met a celebrity ⭐",
+    "heard a loud explosion 💥"
+];
+
+/* AI logic */
+function generateEmotion(text) {
+    text = text.toLowerCase();
+
+    if (text.includes("surprise") || text.includes("won") || text.includes("good news") || text.includes("celebrity")) {
+        return "happy";
+    }
+    if (text.includes("lost") || text.includes("failed")) {
+        return "sad";
+    }
+    if (text.includes("insulted")) {
+        return "angry";
+    }
+    if (text.includes("scary") || text.includes("explosion")) {
+        return "fear";
+    }
+    return "surprised";
+}
+
+/* Next question */
+function nextQuestion() {
+    let s = subjects[Math.floor(Math.random() * subjects.length)];
+    let e = events[Math.floor(Math.random() * events.length)];
+
+    let sentence = `${s} ${e}`;
+    document.getElementById("box").innerText = sentence;
+
+    currentAnswer = generateEmotion(sentence);
+    document.getElementById("feedback").innerText = "";
+}
+
+/* Check answer */
+function check(choice) {
+    if (!gameStarted || time <= 0) return;
+
+    let feedback = document.getElementById("feedback");
+
+    if (choice === currentAnswer) {
+        score++;
+        feedback.innerText = "✅ Correct!";
+        feedback.style.color = "#00e676";
+    } else {
+        score--;
+        feedback.innerText = "❌ Wrong!";
+        feedback.style.color = "#ff5252";
+    }
+
+    document.getElementById("score").innerText = score;
+
+    setTimeout(nextQuestion, 600);
+}
+
+/* Restart */
+function restartGame() {
+    clearInterval(timerInterval);
+    startGame();
+}
+
+</script>
+
+</body>
+</html>

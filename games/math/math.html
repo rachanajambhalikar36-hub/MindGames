@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Child Math AI Game</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Arial Rounded MT Bold", Arial;
+    background: linear-gradient(135deg, #ff4d6d, #ff8fab, #7b2cbf);
+    color: white;
+    text-align: center;
+}
+
+/* Back button */
+#backBtn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 10px;
+    background: white;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Title */
+h1 {
+    margin-top: 20px;
+}
+
+/* Info */
+#info {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 18px;
+}
+
+/* box */
+#box {
+    width: 70%;
+    margin: 25px auto;
+    padding: 25px;
+    font-size: 32px;
+    font-weight: bold;
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+}
+
+/* input */
+input {
+    padding: 12px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    width: 120px;
+    text-align: center;
+}
+
+/* buttons */
+button {
+    margin-top: 12px;
+    padding: 12px 18px;
+    font-size: 15px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#submit {
+    background: #00c853;
+    color: white;
+}
+
+#restart {
+    background: white;
+    color: black;
+}
+
+/* messages */
+#msg {
+    margin-top: 15px;
+    font-size: 18px;
+    min-height: 25px;
+}
+
+#correctAns {
+    margin-top: 10px;
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+/* GAME OVER */
+#gameOverScreen {
+    display:none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    color: white;
+    text-align: center;
+    padding-top: 120px;
+}
+
+/* START SCREEN */
+#startScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ff4d6d, #7b2cbf);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+</style>
+</head>
+
+<body>
+
+<button id="backBtn" onclick="window.history.back()">⬅ Back</button>
+
+<!-- ✅ START SCREEN -->
+<div id="startScreen">
+    <h1>🧮 Child AI Math Game</h1>
+    <p>Click Start to begin your challenge 🚀</p>
+
+    <button onclick="startGame()" style="
+        padding: 15px 25px;
+        font-size: 18px;
+        border-radius: 12px;
+        border: none;
+        background: #00c853;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    ">
+        ▶ Start Game
+    </button>
+</div>
+
+<h1>🧮 Child AI Math Game</h1>
+
+<div id="info">
+    <div>Score: <span id="score">0</span></div>
+    <div>⏱ Time: <span id="time">60</span></div>
+    <div>AI Level: <span id="level">Beginner</span></div>
+</div>
+
+<div id="box"></div>
+
+<input type="number" id="answer" placeholder="Answer">
+
+<br>
+
+<button id="submit" onclick="check()">Submit</button>
+<button id="restart" onclick="restart()">Restart</button>
+
+<div id="msg"></div>
+<div id="correctAns"></div>
+
+<!-- GAME OVER SCREEN -->
+<div id="gameOverScreen">
+    <h1>⏱ Game Over</h1>
+    <h2>Your Score: <span id="finalScore"></span></h2>
+
+    <button onclick="restart()" style="
+        padding: 12px 20px;
+        background: #00c853;
+        color: white;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+    ">Restart</button>
+
+    <button onclick="goBack()" style="
+        padding: 12px 20px;
+        background: red;
+        color: white;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+    ">Back</button>
+</div>
+
+<script>
+
+let score = 0;
+let time = 60;
+let correct = 0;
+let timer;
+let gameOver = false;
+
+let totalQuestions = 0;
+let correctAnswers = 0;
+let avgTime = 0;
+let startTime = 0;
+
+let level = "Beginner";
+
+/* START GAME */
+function startGame() {
+    document.getElementById("startScreen").style.display = "none";
+
+    score = 0;
+    time = 60;
+    gameOver = false;
+
+    totalQuestions = 0;
+    correctAnswers = 0;
+    avgTime = 0;
+    level = "Beginner";
+
+    document.getElementById("score").innerText = score;
+    document.getElementById("time").innerText = time;
+    document.getElementById("level").innerText = level;
+
+    document.getElementById("answer").disabled = false;
+
+    startTimer();
+    newQuestion();
+}
+
+/* DIFFICULTY */
+function getDifficulty() {
+    if (level === "Beginner") return 10;
+    if (level === "Intermediate") return 20;
+    return 20;
+}
+
+/* LEVEL UPDATE */
+function updateLevel() {
+    let accuracy = (correctAnswers / totalQuestions) * 100 || 0;
+
+    if (accuracy > 85 && avgTime < 6) {
+        level = "Intermediate";
+    } else {
+        level = "Beginner";
+    }
+
+    document.getElementById("level").innerText = level;
+}
+
+/* NEW QUESTION */
+function newQuestion() {
+    if (gameOver) return;
+
+    startTime = Date.now();
+
+    let max = getDifficulty();
+
+    let a = Math.floor(Math.random() * max) + 1;
+    let b = Math.floor(Math.random() * max) + 1;
+
+    let ops = ["+", "-", "*"];
+    let op = ops[Math.floor(Math.random() * ops.length)];
+
+    document.getElementById("box").innerText = `${a} ${op} ${b}`;
+
+    if (op === "+") correct = a + b;
+    if (op === "-") correct = a - b;
+    if (op === "*") correct = a * b;
+
+    document.getElementById("answer").value = "";
+    document.getElementById("msg").innerText = "";
+    document.getElementById("correctAns").innerText = "";
+}
+
+/* CHECK ANSWER */
+function check() {
+    if (gameOver) return;
+
+    let user = Number(document.getElementById("answer").value);
+    let timeTaken = (Date.now() - startTime) / 1000;
+
+    totalQuestions++;
+
+    if (user === correct) {
+        score++;
+        correctAnswers++;
+        document.getElementById("msg").innerText = "😊 Correct! Good job!";
+    } else {
+        document.getElementById("msg").innerText = "😅 Try again!";
+    }
+
+    document.getElementById("correctAns").innerText = "✔ Answer: " + correct;
+    document.getElementById("score").innerText = score;
+
+    avgTime = (avgTime + timeTaken) / 2;
+
+    updateLevel();
+    newQuestion();
+}
+
+/* TIMER */
+function startTimer() {
+    timer = setInterval(() => {
+        time--;
+        document.getElementById("time").innerText = time;
+
+        if (time <= 0) {
+            endGame();
+        }
+    }, 1000);
+}
+
+/* END GAME */
+function endGame() {
+    clearInterval(timer);
+    gameOver = true;
+
+    document.getElementById("answer").disabled = true;
+    document.getElementById("finalScore").innerText = score;
+
+    document.getElementById("gameOverScreen").style.display = "block";
+}
+
+function goBack() {
+    window.history.back();
+}
+
+/* RESTART */
+function restart() {
+    document.getElementById("gameOverScreen").style.display = "none";
+
+    score = 0;
+    time = 60;
+    gameOver = false;
+
+    totalQuestions = 0;
+    correctAnswers = 0;
+    avgTime = 0;
+    level = "Beginner";
+
+    document.getElementById("answer").disabled = false;
+
+    document.getElementById("score").innerText = score;
+    document.getElementById("time").innerText = time;
+    document.getElementById("level").innerText = level;
+
+    startTimer();
+    newQuestion();
+}
+
+/* ENTER KEY SUPPORT */
+document.getElementById("answer").addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        check();
+    }
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Breathing Trainer Pro</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    text-align: center;
+    background: linear-gradient(135deg, #74ebd5, #acb6e5);
+    color: white;
+}
+
+/* BACK BUTTON */
+#backBtn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 10px;
+    background: white;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+/* START SCREEN */
+#startScreen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ff4d6d, #7b2cbf);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#difficulty {
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 10px;
+}
+
+/* LAYOUT */
+#container {
+    margin-top: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+/* CIRCLE */
+#circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: #00c853;
+    transform: scale(1);
+    transition: transform 0.1s linear;
+    margin-top: 50px;
+}
+
+/* TEXT */
+#instruction {
+    font-size: 34px;
+    min-height: 50px;
+}
+
+/* BUTTONS */
+button {
+    padding: 12px 18px;
+    margin: 8px;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 80px;
+    font-size: 18px;
+}
+
+/* INFO */
+#info {
+    margin-top: 10px;
+    font-size: 18px;
+}
+
+/* CHART */
+#chart {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 6px;
+    height: 120px;
+    margin-top: 10px;
+}
+
+.bar {
+    width: 20px;
+    background: #00e676;
+    border-radius: 4px;
+}
+
+/*adding border to the streak chart*/
+#chart {
+    border: 2px solid rgba(12, 12, 12, 0.3);
+    padding: 10px;
+    border-radius: 12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- BACK -->
+<button id="backBtn" onclick="window.history.back()">⬅ Back</button>
+
+<!-- START SCREEN -->
+<div id="startScreen">
+    <h1>🌬️ AI Breathing Trainer</h1>
+
+    <select id="difficulty">
+        <option value="beginner">Beginner</option>
+        <option value="medium">Intermediate</option>
+        <option value="hard">Advanced</option>
+    </select>
+
+    <br><br>
+
+    <button onclick="init()">▶ Start</button>
+</div>
+
+<h1>🌬️ Breathing Trainer Pro</h1>
+
+<div id="info">
+⏱ Timer: <span id="timer">60</span>s  
+| 🔥 Streak: <span id="streak">0</span>
+</div>
+
+<div id="container">
+
+    <div id="instruction">Ready</div>
+
+    <div id="circle"></div>
+
+    <div>
+        <button onclick="startBreathing()">Start</button>
+        <button onclick="stopBreathing()">Stop</button>
+    </div>
+
+</div>
+
+<h3>📊 7-Day Streak Chart</h3>
+<div id="chart"></div>
+
+<script>
+
+let running = false;
+let interval;
+let timerInterval;
+
+let inhaleTime = 3000;
+let holdTime = 2000;
+let exhaleTime = 3000;
+
+let sessionTime = 60;
+
+/* ================= INIT DIFFICULTY ================= */
+function init() {
+    document.getElementById("startScreen").style.display = "none";
+
+    let diff = document.getElementById("difficulty").value;
+
+    if (diff === "beginner") {
+        inhaleTime = 3000;
+        holdTime = 2500;
+        exhaleTime = 3000;
+    }
+
+    if (diff === "medium") {
+        inhaleTime = 4500;
+        holdTime = 3500;
+        exhaleTime = 4500;
+    }
+
+    if (diff === "hard") {
+        inhaleTime = 6000;
+        holdTime = 4500;
+        exhaleTime = 6000;
+    }
+
+    loadStreak();
+}
+
+/* ================= BREATHING ================= */
+function startBreathing() {
+    if (running) return;
+    running = true;
+
+    startTimer();
+    cycle();
+}
+
+function cycle() {
+    if (!running) return;
+
+    let scale = 1;
+
+    /* INHALE */
+    document.getElementById("instruction").innerText = "🌬️ Inhale";
+
+    let stepsIn = inhaleTime / 50;
+    let grow = (1.8 - 1) / stepsIn;
+
+    interval = setInterval(() => {
+        if (!running) return;
+        scale += grow;
+        document.getElementById("circle").style.transform = `scale(${scale})`;
+    }, 50);
+
+    setTimeout(() => {
+        clearInterval(interval);
+        if (!running) return;
+
+        /* HOLD */
+        document.getElementById("instruction").innerText = "⏸ Hold";
+
+        setTimeout(() => {
+
+            if (!running) return;
+
+            /* EXHALE */
+            document.getElementById("instruction").innerText = "😮‍💨 Exhale";
+
+            let stepsOut = exhaleTime / 50;
+            let shrink = (scale - 1) / stepsOut;
+
+            interval = setInterval(() => {
+                if (!running) return;
+
+                scale -= shrink;
+                if (scale < 1) scale = 1;
+
+                document.getElementById("circle").style.transform = `scale(${scale})`;
+            }, 50);
+
+            setTimeout(() => {
+                clearInterval(interval);
+
+                if (!running) return;
+
+                /* HOLD AFTER EXHALE */
+                document.getElementById("instruction").innerText = "⏸ Hold";
+
+                setTimeout(() => {
+                    if (!running) return;
+                    cycle();
+                }, holdTime);
+
+            }, exhaleTime);
+
+        }, holdTime);
+
+    }, inhaleTime);
+}
+
+/* ================= TIMER ================= */
+function startTimer() {
+    sessionTime = 60;
+    document.getElementById("timer").innerText = sessionTime;
+
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+        if (!running) return;
+
+        sessionTime--;
+        document.getElementById("timer").innerText = sessionTime;
+
+        if (sessionTime <= 0) {
+            stopBreathing();
+            updateStreak();
+        }
+    }, 1000);
+}
+
+/* ================= STOP ================= */
+function stopBreathing() {
+    running = false;
+    clearInterval(interval);
+    clearInterval(timerInterval);
+    document.getElementById("instruction").innerText = "Paused";
+}
+
+/* ================= STREAK SYSTEM ================= */
+function getToday() {
+    return new Date().toDateString();
+}
+
+function updateStreak() {
+    let lastDate = localStorage.getItem("lastDate");
+    let streak = parseInt(localStorage.getItem("streak")) || 0;
+
+    if (lastDate !== getToday()) {
+        streak++;
+        localStorage.setItem("streak", streak);
+        localStorage.setItem("lastDate", getToday());
+
+        let history = JSON.parse(localStorage.getItem("history")) || [];
+        history.push(streak);
+        if (history.length > 7) history.shift();
+
+        localStorage.setItem("history", JSON.stringify(history));
+    }
+
+    loadStreak();
+}
+
+/* ================= LOAD UI ================= */
+function loadStreak() {
+    let streak = parseInt(localStorage.getItem("streak")) || 0;
+    document.getElementById("streak").innerText = streak;
+
+    drawChart();
+}
+
+/* ================= CHART ================= */
+function drawChart() {
+    let history = JSON.parse(localStorage.getItem("history")) || [];
+    let chart = document.getElementById("chart");
+    chart.innerHTML = "";
+
+    history.forEach(val => {
+        let bar = document.createElement("div");
+        bar.className = "bar";
+        bar.style.height = (val * 15) + "px";
+        chart.appendChild(bar);
+    });
+}
+
+loadStreak();
+
+</script>
+
+</body>
+</html>
